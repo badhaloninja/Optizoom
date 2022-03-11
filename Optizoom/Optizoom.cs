@@ -11,7 +11,7 @@ namespace Optizoom
     {
         public override string Name => "Optizoom";
         public override string Author => "badhaloninja";
-        public override string Version => "1.0.0";
+        public override string Version => "1.1.0";
         public override string Link => "https://github.com/badhaloninja/Optizoom";
 
 
@@ -24,6 +24,15 @@ namespace Optizoom
         [AutoRegisterConfigKey]
         public static readonly ModConfigurationKey<float> ZoomFOV =
             new ModConfigurationKey<float>("zoomFOV", "Zoom FOV", () => 20f);
+
+
+
+        [AutoRegisterConfigKey]
+        public static readonly ModConfigurationKey<bool> LerpZoom =
+            new ModConfigurationKey<bool>("lerpZoom", "Lerp Zoom", () => true);
+        [AutoRegisterConfigKey]
+        public static readonly ModConfigurationKey<float> ZoomSpeed =
+            new ModConfigurationKey<float>("zoomSpeed", "Zoom Speed", () => 50f);
 
         private static ModConfiguration config;
 
@@ -47,17 +56,27 @@ namespace Optizoom
                     lerp = new UserRootFOVLerps(); // Needs one per UserRoot or else userspace and focused world fights
                     lerps.Add(__instance, lerp);
                 }
-                var flag = config != null
-                        && config.GetValue(Enabled)
+                if (config == null) return;
+
+                
+
+
+                var flag =  config.GetValue(Enabled)
                         && !__instance.LocalUser.HasActiveFocus() // Not focused in any field
                         && !Userspace.HasFocus // Not focused in userspace field
                         && __instance.Engine.WorldManager.FocusedWorld == __instance.World // Focused in the same world as the UserRoot
                         && __instance.InputInterface.GetKey(config.GetValue(ZoomKey)); // Key pressed
 
-                float target = flag ? config.GetValue(ZoomFOV) : __result;
+                float target = flag ? Settings.ReadValue("Settings.Graphics.DesktopFOV", 60f) - config.GetValue(ZoomFOV) : 0f;//__result;
 
-                lerp.currentLerp = MathX.SmoothDamp(lerp.currentLerp, target, ref lerp.lerpVelocity, 50f, 179f, __instance.Time.Delta); // Funny lerp
-                __result = lerp.currentLerp;
+                if (config.GetValue(LerpZoom))
+                {
+                    lerp.currentLerp = MathX.SmoothDamp(lerp.currentLerp, target, ref lerp.lerpVelocity, config.GetValue(ZoomSpeed), 179f, __instance.Time.Delta); // Funny lerp
+                    __result -= lerp.currentLerp;
+                } else
+                {
+                    __result -= target;
+                }
 
                 
                 __result = MathX.FilterInvalid(__result, 60f); // fallback to 60 fov if invalid
