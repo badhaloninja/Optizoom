@@ -1,6 +1,6 @@
 ﻿# Optizoom
 
-A [ResoniteModLoader](https://github.com/resonite-modding-group/ResoniteModLoader/) mod for [Resonite](https://resonite.com/). Adds user join and leave notifications to the notifications panel
+A [ResoniteModLoader](https://github.com/resonite-modding-group/ResoniteModLoader/) mod for [Resonite](https://resonite.com/). Adds the ability to zoom with a keypress
 
 ## Installation
 1. Install [ResoniteModLoader](https://github.com/resonite-modding-group/ResoniteModLoader/).
