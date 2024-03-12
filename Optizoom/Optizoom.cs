@@ -11,7 +11,7 @@ namespace Optizoom
     {
         public override string Name => "Optizoom";
         public override string Author => "badhaloninja";
-        public override string Version => "2.0.0";
+        public override string Version => "2.1.0";
         public override string Link => "https://github.com/badhaloninja/Optizoom";
 
 
@@ -45,7 +45,7 @@ namespace Optizoom
         [AutoRegisterConfigKey]
         public static readonly ModConfigurationKey<float2> overlaySize = new("overlaySize", "Overlay Size", () => float2.One * 1.12f);
         [AutoRegisterConfigKey]
-        public static readonly ModConfigurationKey<Uri> overlayUri = new("overlayUri", "Overlay Uri", () => new Uri("Resonitedb:///55b0aea6dcdce645b3f01ff83877b88f16402155f4ba54bced02aa6bdae528b9.png"));
+        public static readonly ModConfigurationKey<Uri> overlayUri = new("overlayUri", "Overlay Uri", () => new Uri("resdb:///55b0aea6dcdce645b3f01ff83877b88f16402155f4ba54bced02aa6bdae528b9.png"));
         [AutoRegisterConfigKey]
         public static readonly ModConfigurationKey<bool> overlayBg = new("overlayBg", "Enable Overlay Background", () => true);
         [AutoRegisterConfigKey]
@@ -71,7 +71,7 @@ namespace Optizoom
         {
             config = GetConfiguration();
 
-            Harmony harmony = new("me.badhaloninja.Optizoom");
+            Harmony harmony = new("ninja.badhalo.Optizoom");
             harmony.PatchAll();
 
             config.OnThisConfigurationChanged += ConfigChanged;
