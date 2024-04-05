@@ -11,7 +11,7 @@ namespace Optizoom
     {
         public override string Name => "Optizoom";
         public override string Author => "badhaloninja";
-        public override string Version => "2.1.0";
+        public override string Version => "2.1.1";
         public override string Link => "https://github.com/badhaloninja/Optizoom";
 
 
@@ -158,13 +158,12 @@ namespace Optizoom
                 frameRenderer.EnabledField.SyncWithVariable("overlayBg");
 
 
-                var zoomIn = overlayVisual.AttachAudioClip(config.GetValue(zoomInSound), false);
-                var zoomOut = overlayVisual.AttachAudioClip(config.GetValue(zoomOutSound), false);
+                var zoomIn = overlayVisual.AttachComponent<StaticAudioClip>();
+                zoomIn.URL.Value = config.GetValue(zoomInSound);
                 zoomIn.URL.SyncWithVariable("zoomInSoundUri");
+                var zoomOut = overlayVisual.AttachComponent<StaticAudioClip>();
+                zoomOut.URL.Value = config.GetValue(zoomOutSound);
                 zoomOut.URL.SyncWithVariable("zoomOutSoundUri");
-                
-
-
             }
 
             [HarmonyPostfix]
