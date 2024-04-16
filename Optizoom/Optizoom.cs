@@ -11,7 +11,7 @@ namespace Optizoom
     {
         public override string Name => "Optizoom";
         public override string Author => "badhaloninja";
-        public override string Version => "2.1.1";
+        public override string Version => "2.1.2";
         public override string Link => "https://github.com/badhaloninja/Optizoom";
 
 
@@ -202,7 +202,7 @@ namespace Optizoom
         {
             static readonly Dictionary<UserRoot, UserRootFOVLerps> FOVLerps = new();
 
-            public static void Postfix(UserRoot __instance, ref float __result)
+            public static void Postfix(UserRoot __instance, ref float __result, DesktopRenderSettings ____renderSettings)
             {
                 if (config == null) return;
                 if (!FOVLerps.TryGetValue(__instance, out UserRootFOVLerps lerp))
@@ -216,8 +216,9 @@ namespace Optizoom
                         && !Userspace.HasFocus // Not focused in userspace field
                         && __instance.Engine.WorldManager.FocusedWorld == __instance.World // Focused in the same world as the UserRoot
                         && (toggleState || __instance.InputInterface.GetKey(config.GetValue(ZoomKey))); // Key pressed
-
-                float target = flag ? Settings.ReadValue("Settings.Graphics.DesktopFOV", 60f) - config.GetValue(ZoomFOV) : 0f;//__result;
+                
+                float fovSetting = (____renderSettings != null) ? ____renderSettings.FieldOfView.Value : 60f;
+                float target = flag ? fovSetting - config.GetValue(ZoomFOV) : 0f;//__result;
                 
                 if (flag && config.GetValue(ScrollZoom))
                 {
