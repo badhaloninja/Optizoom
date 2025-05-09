@@ -11,7 +11,7 @@ namespace Optizoom
     {
         public override string Name => "Optizoom";
         public override string Author => "badhaloninja";
-        public override string Version => "2.1.2";
+        public override string Version => "2.1.3";
         public override string Link => "https://github.com/badhaloninja/Optizoom";
 
 
@@ -59,6 +59,9 @@ namespace Optizoom
         [AutoRegisterConfigKey]
         public static readonly ModConfigurationKey<float> zoomVolume = new("zoomVolume", "Zoom Volume", () => 1f, valueValidator: f=>f.IsBetween(0f,1f));
         // Add random range for volume and speed
+
+        [AutoRegisterConfigKey]
+        public static readonly ModConfigurationKey<bool> exposeZoomedInVariable = new("exposeZoomedInVariable", "Exposed Zoomed in variable on user (User/optizoom.zoomed_in)", () => false);
 
 
         private static ModConfiguration config;
@@ -175,21 +178,29 @@ namespace Optizoom
                     toggleState = !toggleState;
                 }
                 
-                var flag = config.GetValue(Enabled) && config.GetValue(enableOverlay)
+                var zoom = config.GetValue(Enabled) 
                         && !__instance.LocalUser.HasActiveFocus() // Not focused in any field
                         && !Userspace.HasFocus // Not focused in userspace field
                         && (toggleState || __instance.InputInterface.GetKey(config.GetValue(ZoomKey))); // Key pressed
 
-                
 
-                if (flag != overlayVisual.ActiveSelf)
+                /*if (config.GetValue(exposeZoomedInVariable))
                 {
-                    overlayVisual.ActiveSelf = flag;
+                    var userRootSlot = __instance.Engine.WorldManager.FocusedWorld?.LocalUser?.Root?.Slot;
 
-                    var soundUri = config.GetValue(flag ? zoomInSound : zoomOutSound);
+                    userRootSlot.WriteDynamicVariable()
+                }*/
+
+                if ((zoom && config.GetValue(enableOverlay)) != overlayVisual.ActiveSelf)
+                {
+                    overlayVisual.ActiveSelf = zoom;
+
+                    var soundUri = config.GetValue(zoom ? zoomInSound : zoomOutSound);
                     if (soundUri == null) return;
+                    
                     var clip = overlayVisual.GetComponent<StaticAudioClip>(a => a.URL.Value == soundUri);
                     if (clip == null) return;
+                    
                     overlayVisual.PlayOneShot(clip, config.GetValue(zoomVolume), false, parent: false);
                 }
             }
@@ -200,7 +211,7 @@ namespace Optizoom
         [HarmonyPatch(typeof(UserRoot), "get_DesktopFOV")]
         class Optizoom_Patch
         {
-            static readonly Dictionary<UserRoot, UserRootFOVLerps> FOVLerps = new();
+            static readonly Dictionary<UserRoot, UserRootFOVLerps> FOVLerps = [];
 
             public static void Postfix(UserRoot __instance, ref float __result, DesktopRenderSettings ____renderSettings)
             {
@@ -211,16 +222,16 @@ namespace Optizoom
                     FOVLerps.Add(__instance, lerp);
                 }
 
-                var flag =  config.GetValue(Enabled)
+                var zoom =  config.GetValue(Enabled)
                         && !__instance.LocalUser.HasActiveFocus() // Not focused in any field
                         && !Userspace.HasFocus // Not focused in userspace field
                         && __instance.Engine.WorldManager.FocusedWorld == __instance.World // Focused in the same world as the UserRoot
                         && (toggleState || __instance.InputInterface.GetKey(config.GetValue(ZoomKey))); // Key pressed
                 
                 float fovSetting = (____renderSettings != null) ? ____renderSettings.FieldOfView.Value : 60f;
-                float target = flag ? fovSetting - config.GetValue(ZoomFOV) : 0f;//__result;
+                float target = zoom ? fovSetting - config.GetValue(ZoomFOV) : 0f;//__result;
                 
-                if (flag && config.GetValue(ScrollZoom))
+                if (zoom && config.GetValue(ScrollZoom))
                 {
                     var scrollDelta = -__instance.InputInterface.Mouse.NormalizedScrollWheelDelta.Value.Y;//.ScrollWheelDelta.Delta.y;
 
@@ -274,7 +285,7 @@ namespace Optizoom
 
             DynamicVariableSpace dynamicVariableSpace = root.FindSpace(spaceName);
             if (dynamicVariableSpace == null) return false;
-            return dynamicVariableSpace.TryWriteValue(text, value);
+            return dynamicVariableSpace.TryWriteValue(text, value) == DynamicVariableWriteResult.Success;
         }
         public static bool TryReadDynamicValue<T>(Slot root, string name, out T value)
         {
