@@ -1,5 +1,6 @@
 using FrooxEngine;
 using HarmonyLib;
+using Renderite.Shared;
 using ResoniteModLoader;
 using System;
 using Elements.Core;

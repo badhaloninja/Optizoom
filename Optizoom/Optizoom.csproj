@@ -20,7 +20,7 @@
 	<PropertyGroup>
 		<OutputType>Library</OutputType>
 		<AppDesignerFolder>Properties</AppDesignerFolder>
-		<TargetFramework>net472</TargetFramework>
+		<TargetFramework>net9.0</TargetFramework>
 		<LangVersion>preview</LangVersion>
 		<FileAlignment>512</FileAlignment>
 		<Deterministic>true</Deterministic>
@@ -46,7 +46,8 @@
 		<AppPath Condition="Exists('$(HOME)/.steam/steam/steamapps/common/$(AppName)/')">$(HOME)/.steam/steam/steamapps/common/$(AppName)/</AppPath>
 		<AppPath Condition="Exists('C:\Program Files (x86)\Steam\steamapps\common\$(AppName)\')">C:\Program Files (x86)\Steam\steamapps\common\$(AppName)\</AppPath>
 
-		<AppData Condition="Exists('$(AppPath)$(AppName)_Data')">$(AppPath)$(AppName)_Data\Managed\</AppData>
+		<AppData>$(AppPath)</AppData>
+		<!--<AppData Condition="Exists('$(AppPath)$(AppName)_Data')">$(AppPath)$(AppName)_Data\Managed\</AppData>-->
 
 		<AlternateDataPath>$(AppPath)\Alt\</AlternateDataPath>
 		<AlternateDataPath Condition="Exists('$(AppPath)')">$(AppPath)_altData</AlternateDataPath>
@@ -61,6 +62,9 @@
 		</Reference>
 		<Reference Include="Elements.Assets">
 			<HintPath>$(AppData)Elements.Assets.dll</HintPath>
+		</Reference>
+		<Reference Include="Renderite.Shared">
+			<HintPath>$(AppData)Renderite.Shared.dll</HintPath>
 		</Reference>
 		<Reference Include="HarmonyLib">
 			<HintPath>$(AppPath)$(ModLoaderShort)_libs\0Harmony.dll</HintPath>
