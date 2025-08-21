@@ -1,5 +1,6 @@
 using FrooxEngine;
 using HarmonyLib;
+using Renderite.Shared;
 using ResoniteModLoader;
 using System;
 using Elements.Core;
@@ -11,7 +12,7 @@ namespace Optizoom
     {
         public override string Name => "Optizoom";
         public override string Author => "badhaloninja";
-        public override string Version => "2.1.3";
+        public override string Version => "2.2.0";
         public override string Link => "https://github.com/badhaloninja/Optizoom";
 
 
